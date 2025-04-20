@@ -54,6 +54,18 @@ contract RebaseToken is ERC20{
         s_userInterestRate[_to] = s_interestRate;
         _mint(_to, _amount);
     }
+    /*
+    * @notice Burn the user tokens when they withdraw from the vault.
+    * @param _from The address of the user to burn the tokens from.
+    * @param _amount The amount of tokens to burn.
+    */
+    function burn(address _from, uint256 _amount) external {
+        if(_amount == type(uint256).max) {
+            _amount = balanceOf(_from);
+        }
+        _mintAccruedInterest(_from);
+        _burn(_from, _amount);
+    }
 
     /*
     * @notice calculate the balance of the user including interest accrued since the last update.
