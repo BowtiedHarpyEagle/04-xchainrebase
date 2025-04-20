@@ -18,8 +18,10 @@ contract RebaseToken is ERC20{
 
     error RebaseToken__InterestRateCanOnlyDecrease(uint256 oldInterestRate, uint256 newInterestRate);
 
+    uint256 private constant PRECISION_FACTOR = 1e18; 
     uint256 private s_interestRate = 5e10; // interest rate per second in 1e18
     mapping (address => uint256) private s_userInterestRate;
+    mapping (address => uint256) private s_userLastUpdatedTimestamp;
 
     constructor() ERC20("RebaseToken", "RBT") {
 
@@ -41,17 +43,59 @@ contract RebaseToken is ERC20{
         emit InterestRateSet(_newInterestRate);
     }
 
+    /*
+    * @notice Mint the user tokens when they deposit into the vault.
+    * @param _to The address of the user to mint the tokens to.
+    * @param _amount The amount of tokens to mint.
+    */
+
     function mint(address _to, uint256 _amount) external {
         _mintAccruedInterest(_to);
         s_userInterestRate[_to] = s_interestRate;
         _mint(_to, _amount);
     }
 
+    /*
+    * @notice calculate the balance of the user including interest accrued since the last update.
+    * @notice (principal) + interest accrued since the last update
+    * @param _user The address of the user to calculate the balance for.
+    * @return The balance of the user including interest accrued since the last update.
+    */
+
+    function balanceOf(address _user) public view override returns (uint256) {
+        // get the current principal balance of the user (already minted tokens)
+        // multiply the principal balance by the interest rate
+        return super.balanceOf(_user) * _calculateUserAccumulatedInterestRateSinceLastUpdate(_user) / PRECISION_FACTOR;
+    }
+
+    /*
+    * @notice calculate the interest rate for the user since the last update.
+    * @param _user The address of the user to calculate the interest rate for.
+    * @return The interest rate for the user since the last update.
+    */
+
+   function _calculateUserAccumulatedInterestRateSinceLastUpdate(address _user) internal view returns (uint256 linearInterest) {
+        // we need to calculate the interest rate for the user since the last update
+        // this is going to be linear growth with time
+        // 1. calculate the time since the last update
+        // 2. calculate the amount of linear growth
+        // (principal amount) + (principal amount * interest rate * time since last update)
+        // or (principal amount) * (1 + interest rate * time since last update)
+        // say, you deposit 10 tokens 
+        // and the interest rate is 0.5 tokens per second
+        // and the last update was 2 seconds ago
+        // the new balance would be 10 + (10 * 0.5 * 2) = 10 + 10 = 20
+        uint256 timeElapsed = block.timestamp - s_userLastUpdatedTimestamp[_user];
+        linearInterest = PRECISION_FACTOR + (s_userInterestRate[_user] * timeElapsed);
+    }
+
     function _mintAccruedInterest(address _user) internal {
         // (1) find the current balance of already minted tokens to the user -> principal
         // (2) calculate the current balance including interest
-        // (3) calculate difference between the current balance and the new balance
+        // calculate difference between the current balance and the new balance
         // call _mint to mint the necessary amount
+        // set the user last updated timestamp to the current block timestamp
+        s_userLastUpdatedTimestamp[_user] = block.timestamp;
     }
 
     function getUserInterestRate(address _user) external view returns (uint256) {
