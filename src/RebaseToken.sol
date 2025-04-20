@@ -80,6 +80,18 @@ contract RebaseToken is ERC20{
         return super.balanceOf(_user) * _calculateUserAccumulatedInterestRateSinceLastUpdate(_user) / PRECISION_FACTOR;
     }
 
+    function transfer(address _recipient, uint256 _amount) public override returns (bool) {
+        _mintAccruedInterest(msg.sender);
+        _mintAccruedInterest(_recipient);
+        if (_amount == type(uint256).max) {
+            _amount = balanceOf(msg.sender);
+        }
+        if (balanceOf(_recipient) == 0) {
+            s_userInterestRate[_recipient] = s_userInterestRate[msg.sender];
+        }
+        return super.transfer(_recipient, _amount);
+    }
+
     /*
     * @notice calculate the interest rate for the user since the last update.
     * @param _user The address of the user to calculate the interest rate for.
