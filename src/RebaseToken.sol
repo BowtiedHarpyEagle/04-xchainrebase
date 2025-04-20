@@ -44,6 +44,17 @@ contract RebaseToken is ERC20{
     }
 
     /*
+    * @notice This function returns the principal balance of the user. These are the tokens currently minted to the user not including interest since the last update.
+    * @param _user The address of the user to get the principal balance for.
+    * @return The principal balance of the user.
+    * @dev The principal balance is the amount of tokens that have been minted to the user.
+    * 
+
+    function principalBalanceOf(address _user) external view returns (uint256) {
+        return super.balanceOf(_user);
+    }
+
+    /*
     * @notice Mint the user tokens when they deposit into the vault.
     * @param _to The address of the user to mint the tokens to.
     * @param _amount The amount of tokens to mint.
@@ -161,6 +172,11 @@ contract RebaseToken is ERC20{
     function getUserInterestRate(address _user) external view returns (uint256) {
         return s_userInterestRate[_user];
     }
+
+    /*
+    * @notice Get the interest rate for the contract.
+    * @return The interest rate for the contract.
+    */
 
     function getInterestRate() external view returns (uint256) {
         return s_interestRate;
