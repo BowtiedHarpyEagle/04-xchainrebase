@@ -184,7 +184,4 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
         return s_interestRate;
     }
 
-
-
-
 }
