@@ -3,6 +3,8 @@ pragma solidity ^0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
 
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+
 import {RebaseToken} from "../src/RebaseToken.sol";
 import {Vault} from "../src/Vault.sol";
 
@@ -131,9 +133,21 @@ contract RebaseTokenTest is Test {
 
     function testCannotSetInterestRate() public {
         vm.prank(user);
-        vm.expectRevert();
+        // custom errors can be difficult to test so we use the vm.expectPartialRevert
+        vm.expectPartialRevert(Ownable.OwnableUnauthorizedAccount.selector);
         rebaseToken.setInterestRate(4e10);
     }
+
+    function testCannotMintAndBurn() public {
+        vm.startPrank(user);
+        vm.expectRevert();
+        rebaseToken.mint(user, 1e5);
+        vm.expectRevert();
+        rebaseToken.burn(user, 1e5);
+        vm.stopPrank();
+    }
+
+
 
 
 
