@@ -127,10 +127,14 @@ contract RebaseTokenTest is Test {
         assertEq(rebaseToken.getUserInterestRate(user), 5e10);
         assertEq(rebaseToken.getUserInterestRate(user2), 5e10);
 
-
-
-
     }
+
+    function testCannotSetInterestRate() public {
+        vm.prank(user);
+        vm.expectRevert();
+        rebaseToken.setInterestRate(4e10);
+    }
+
 
 
 }
