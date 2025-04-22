@@ -151,16 +151,20 @@ contract RebaseTokenTest is Test {
         vm.stopPrank();
     }
 
-        function testGetPrincipleAmount(uint256 amount) public {
-            amount = bound(amount, 1e5, type(uint96).max);
-            vm.deal(user, amount);
-            vm.prank(user);
-            vault.deposit{value: amount}();
-            assertEq(rebaseToken.principalBalanceOf(user), amount);
+    function testGetPrincipleAmount(uint256 amount) public {
+        amount = bound(amount, 1e5, type(uint96).max);
+        vm.deal(user, amount);
+        vm.prank(user);
+        vault.deposit{value: amount}();
+        assertEq(rebaseToken.principalBalanceOf(user), amount);
 
-            vm.warp(block.timestamp + 1 hours);
-            assertEq(rebaseToken.principalBalanceOf(user), amount);
-        }
+        vm.warp(block.timestamp + 1 hours);
+        assertEq(rebaseToken.principalBalanceOf(user), amount);
+    }
+
+    function testGetRebaseTokenAddress() public view {
+        assertEq(vault.getRebaseTokenAddress(), address(rebaseToken));
+    }
 
 }
 
