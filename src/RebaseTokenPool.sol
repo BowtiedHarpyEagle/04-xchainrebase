@@ -11,12 +11,14 @@ contract RebaseTokenPool is TokenPool {
 
     function lockOrBurn(
     Pool.LockOrBurnInV1 calldata lockOrBurnIn
-  ) external returns (Pool.LockOrBurnOutV1 memory lockOrBurnOut) {
-      
+  ) external returns (Pool.LockOrBurnOutV1 memory lockOrBurnOut) 
+  {
+    _validateLockOrBurn(lockOrBurnIn);
   }
 
   function releaseOrMint(
     Pool.ReleaseOrMintInV1 calldata releaseOrMintIn
-  ) external returns (Pool.ReleaseOrMintOutV1 memory) {}
+  ) external returns (Pool.ReleaseOrMintOutV1 memory) 
+  {}
 
 }
