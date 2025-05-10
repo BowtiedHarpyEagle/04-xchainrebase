@@ -65,9 +65,9 @@ contract RebaseToken is ERC20, Ownable, AccessControl {
     * @param _amount The amount of tokens to mint.
     */
 
-    function mint(address _to, uint256 _amount) external onlyRole(MINT_AND_BURN_ROLE) {
+    function mint(address _to, uint256 _amount, uint256 _userInterestrate) external onlyRole(MINT_AND_BURN_ROLE) {
         _mintAccruedInterest(_to);
-        s_userInterestRate[_to] = s_interestRate;
+        s_userInterestRate[_to] = _userInterestrate;
         _mint(_to, _amount);
     }
     /**
