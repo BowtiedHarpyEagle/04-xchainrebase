@@ -9,4 +9,7 @@ import {RebaseTokenPool} from "../src/RebaseTokenPool.sol";
 
 import {IRebaseToken} from "../src/interfaces/IRebaseToken.sol";
 
-contract CrossChainTest is Test {}
+contract CrossChainTest is Test {
+    function setUp() public {}
+    
+}
