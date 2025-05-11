@@ -145,7 +145,7 @@ contract RebaseTokenTest is Test {
         vm.startPrank(user);
         // the Updra
         vm.expectPartialRevert(IAccessControl.AccessControlUnauthorizedAccount.selector);
-        rebaseToken.mint(user, 100);
+        rebaseToken.mint(user, 100, rebaseToken.getInterestRate());
         vm.expectRevert();
         rebaseToken.burn(user, 100);
         vm.stopPrank();
