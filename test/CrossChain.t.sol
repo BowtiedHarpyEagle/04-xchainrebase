@@ -15,9 +15,14 @@ contract CrossChainTest is Test {
     uint256 ethSepoliaFork;
     uint256 arbSepoliaFork;
 
+    CCIPLocalSimulatorFork ccipLocalSimulatorFork;
+
     function setUp() public {
         ethSepoliaFork = vm.createSelectFork("sepolia-eth");
         arbSepoliaFork = vm.createFork("sepolia-arb");
+
+        ccipLocalSimulatorFork = new CCIPLocalSimulatorFork();
+        vm.makePersistent(address(ccipLocalSimulatorFork));
     }
 
 }
