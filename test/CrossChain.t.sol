@@ -13,7 +13,7 @@ import {IRebaseToken} from "../src/interfaces/IRebaseToken.sol";
 import {IERC20} from "@chainlink/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/IERC20.sol";
 import {RegistryModuleOwnerCustom} from "@chainlink/ccip/tokenAdminRegistry/RegistryModuleOwnerCustom.sol";
 import {TokenAdminRegistry} from "@chainlink/ccip/tokenAdminRegistry/TokenAdminRegistry.sol";
-
+import {TokenPool} from "@chainlink/ccip/pools/TokenPool.sol";
 
 contract CrossChainTest is Test {
     address constant owner = makeAddr("owner");
@@ -65,6 +65,13 @@ contract CrossChainTest is Test {
         TokenAdminRegistry(arbSepoliaNetworkDetails.tokenAdminRegistryAddress).acceptAdminRole(address(arbSepoliaToken));
         TokenAdminRegistry(arbSepoliaNetworkDetails.tokenAdminRegistryAddress).setPool(address(arbSepoliaToken), address(arbSepoliaPool));
         vm.stopPrank();
+    }
+
+    function configureTokenPool(uint256 fork, address localPool) public {
+        vm.selectFork(fork);
+        vm.prank(owner);
+        TokenPool.ChainUpdate[] memory chainsToAdd = new TokenPool.ChainUpdate[](1);
+        TokenPool(localPool).applyChainUpdates(new uint64[](0));
     }
 
 }
