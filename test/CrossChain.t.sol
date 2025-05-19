@@ -50,6 +50,7 @@ contract CrossChainTest is Test {
         ethSepoliaPool.grantMintAndBurnRole(address(vault));
         RegistryModuleOwnerCustom(ethSepoliaNetworkDetails.registryModuleOwnerCustomAddress).registerAdminViaOwner(address(ethSepoliaToken));
         TokenAdminRegistry(ethSepoliaNetworkDetails.tokenAdminRegistryAddress).acceptAdminRole(address(ethSepoliaToken));
+        TokenAdminRegistry(ethSepoliaNetworkDetails.tokenAdminRegistryAddress).setPool(address(ethSepoliaToken), address(ethSepoliaPool));
         vm.stopPrank();
 
         //deploy and configure on arbSepolia
@@ -62,6 +63,7 @@ contract CrossChainTest is Test {
         arbSepoliaPool.grantMintAndBurnRole(address(vault));
         RegistryModuleOwnerCustom(arbSepoliaNetworkDetails.registryModuleOwnerCustomAddress).registerAdminViaOwner(address(arbSepoliaToken));
         TokenAdminRegistry(arbSepoliaNetworkDetails.tokenAdminRegistryAddress).acceptAdminRole(address(arbSepoliaToken));
+        TokenAdminRegistry(arbSepoliaNetworkDetails.tokenAdminRegistryAddress).setPool(address(arbSepoliaToken), address(arbSepoliaPool));
         vm.stopPrank();
     }
 
