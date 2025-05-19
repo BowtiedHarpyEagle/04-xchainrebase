@@ -12,6 +12,7 @@ import {RebaseTokenPool} from "../src/RebaseTokenPool.sol";
 import {IRebaseToken} from "../src/interfaces/IRebaseToken.sol";
 import {IERC20} from "@chainlink/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/IERC20.sol";
 import {RegistryModuleOwnerCustom} from "@chainlink/ccip/tokenAdminRegistry/RegistryModuleOwnerCustom.sol";
+import {TokenAdminRegistry} from "@chainlink/ccip/tokenAdminRegistry/TokenAdminRegistry.sol";
 
 
 contract CrossChainTest is Test {
@@ -48,6 +49,7 @@ contract CrossChainTest is Test {
         ethSepoliaToken.grantMintAndBurnRole(address(vault));
         ethSepoliaPool.grantMintAndBurnRole(address(vault));
         RegistryModuleOwnerCustom(ethSepoliaNetworkDetails.registryModuleOwnerCustomAddress).registerAdminViaOwner(address(ethSepoliaToken));
+        TokenAdminRegistry(ethSepoliaNetworkDetails.tokenAdminRegistryAddress).acceptAdminRole(address(ethSepoliaToken));
         vm.stopPrank();
 
         //deploy and configure on arbSepolia
@@ -59,6 +61,7 @@ contract CrossChainTest is Test {
         arbSepoliaToken.grantMintAndBurnRole(address(vault));
         arbSepoliaPool.grantMintAndBurnRole(address(vault));
         RegistryModuleOwnerCustom(arbSepoliaNetworkDetails.registryModuleOwnerCustomAddress).registerAdminViaOwner(address(arbSepoliaToken));
+        TokenAdminRegistry(arbSepoliaNetworkDetails.tokenAdminRegistryAddress).acceptAdminRole(address(arbSepoliaToken));
         vm.stopPrank();
     }
 
