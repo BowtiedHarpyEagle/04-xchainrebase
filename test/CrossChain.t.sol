@@ -14,6 +14,7 @@ import {IERC20} from "@chainlink/vendor/openzeppelin-solidity/v4.8.3/contracts/t
 import {RegistryModuleOwnerCustom} from "@chainlink/ccip/tokenAdminRegistry/RegistryModuleOwnerCustom.sol";
 import {TokenAdminRegistry} from "@chainlink/ccip/tokenAdminRegistry/TokenAdminRegistry.sol";
 import {TokenPool} from "@chainlink/ccip/pools/TokenPool.sol";
+import {RateLimiter} from "@chainlink/ccip/libraries/RateLimiter.sol";
 
 contract CrossChainTest is Test {
     address constant owner = makeAddr("owner");
@@ -67,10 +68,26 @@ contract CrossChainTest is Test {
         vm.stopPrank();
     }
 
-    function configureTokenPool(uint256 fork, address localPool) public {
+    function configureTokenPool(uint256 fork, address localPool, uint64 remoteChainSelector, address remotePool, address remoteToken) public {
         vm.selectFork(fork);
         vm.prank(owner);
+        bytes[] memory remotePoolAddresses = new bytes[](1);
+        remotePoolAddresses[0] = abi.encode(remotePool);
         TokenPool.ChainUpdate[] memory chainsToAdd = new TokenPool.ChainUpdate[](1);
+        // struct ChainUpdate {
+        //     uint64 remoteChainSelector; // Remote chain selector
+        //     bytes[] remotePoolAddresses; // Address of the remote pool, ABI encoded in the case of a remote EVM chain.
+        //     bytes remoteTokenAddress; // Address of the remote token, ABI encoded in the case of a remote EVM chain.
+        //     RateLimiter.Config outboundRateLimiterConfig; // Outbound rate limited config, meaning the rate limits for all of the onRamps for the given chain
+        //     RateLimiter.Config inboundRateLimiterConfig; // Inbound rate limited config, meaning the rate limits for all of the offRamps for the given chain
+        // }
+        
+        chainsToAdd[0] = TokenPool.ChainUpdate({
+            remoteChainSelector: remoteChainSelector,
+            remotePoolAddresses: remotePoolAddresses,
+            remoteTokenAddress: abi.encode(remoteToken),
+
+        });
         TokenPool(localPool).applyChainUpdates(new uint64[](0));
     }
 
