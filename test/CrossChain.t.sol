@@ -65,6 +65,8 @@ contract CrossChainTest is Test {
         RegistryModuleOwnerCustom(arbSepoliaNetworkDetails.registryModuleOwnerCustomAddress).registerAdminViaOwner(address(arbSepoliaToken));
         TokenAdminRegistry(arbSepoliaNetworkDetails.tokenAdminRegistryAddress).acceptAdminRole(address(arbSepoliaToken));
         TokenAdminRegistry(arbSepoliaNetworkDetails.tokenAdminRegistryAddress).setPool(address(arbSepoliaToken), address(arbSepoliaPool));
+        configureTokenPool(ethSepoliaFork, address(ethSepoliaPool), arbSepoliaNetworkDetails.chainSelector, address(arbSepoliaPool), address(arbSepoliaToken));
+        configureTokenPool(arbSepoliaFork, address(arbSepoliaPool), ethSepoliaNetworkDetails.chainSelector, address(ethSepoliaPool), address(ethSepoliaToken));
         vm.stopPrank();
     }
 
@@ -86,6 +88,16 @@ contract CrossChainTest is Test {
             remoteChainSelector: remoteChainSelector,
             remotePoolAddresses: remotePoolAddresses,
             remoteTokenAddress: abi.encode(remoteToken),
+            outboundRateLimiterConfig: RateLimiter.Config({
+                isEnabled: false,
+                capacity: 0,
+                rate: 0
+            }),
+            inboundRateLimiterConfig: RateLimiter.Config({
+                isEnabled: false,
+                capacity: 0,
+                rate: 0
+            })
 
         });
         TokenPool(localPool).applyChainUpdates(new uint64[](0));
